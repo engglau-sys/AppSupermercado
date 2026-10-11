@@ -1,33 +1,41 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Family, User } from '../types/shopping';
 import { shoppingService } from '../services';
-import { INITIAL_CURRENT_USER_ID, INITIAL_USERS, INITIAL_FAMILY } from '../services/mockData';
-
-const ACTIVE_USER_STORAGE_KEY = 'app_supermercado_active_user_id_v1';
 
 export function useFamily() {
-  const [family, setFamily] = useState<Family>(INITIAL_FAMILY);
-  const [members, setMembers] = useState<User[]>(INITIAL_USERS);
-  const [activeUserId, setActiveUserId] = useState<string>(() => {
-    return localStorage.getItem(ACTIVE_USER_STORAGE_KEY) || INITIAL_CURRENT_USER_ID;
-  });
+  const [family, setFamily] = useState<Family>({ id: '', name: 'Home' });
+  const [members, setMembers] = useState<User[]>([]);
+  const [activeUserId, setActiveUserId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Carregar família e utilizadores
+  // Carregar família e utilizadores reais diretamente do Supabase
   useEffect(() => {
     let isMounted = true;
 
     async function loadFamilyData() {
       try {
-        const familyData = await shoppingService.getFamily(INITIAL_FAMILY.id);
-        const familyMembers = await shoppingService.getFamilyUsers(INITIAL_FAMILY.id);
+        setIsLoading(true);
+        // Obter família ativa "Home" do Supabase
+        const familyData = await shoppingService.getFamily('Home');
 
-        if (isMounted) {
-          if (familyData) setFamily(familyData);
-          if (familyMembers.length > 0) setMembers(familyMembers);
+        if (familyData && isMounted) {
+          setFamily(familyData);
+          // Obter os utilizadores reais da tabela 'users' (id, name, avatar, color)
+          const familyMembers = await shoppingService.getFamilyUsers(familyData.id);
+
+          if (isMounted) {
+            setMembers(familyMembers);
+            if (familyMembers.length > 0) {
+              setActiveUserId((prev) => {
+                // Manter o utilizador ativo se já existir na lista, senão selecionar o primeiro
+                const exists = familyMembers.some((m) => m.id === prev);
+                return exists ? prev : familyMembers[0].id;
+              });
+            }
+          }
         }
       } catch (err) {
-        console.error('Erro ao carregar dados da família:', err);
+        console.error('Erro ao carregar dados da família no Supabase:', err);
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -40,21 +48,18 @@ export function useFamily() {
     };
   }, []);
 
-  // Alterar utilizador ativo (Glaucia por defeito)
+  // Alternar utilizador ativo (armazenado em memória, sem localStorage)
   const switchUser = useCallback((userId: string) => {
     setActiveUserId(userId);
-    try {
-      localStorage.setItem(ACTIVE_USER_STORAGE_KEY, userId);
-    } catch (e) {
-      console.error('Erro ao guardar utilizador ativo:', e);
-    }
   }, []);
 
-  // Utilizador atualmente ativo (Glaucia por defeito)
+  // Utilizador atualmente ativo
   const currentUser: User = members.find((m) => m.id === activeUserId) || members[0] || {
-    id: INITIAL_CURRENT_USER_ID,
-    familyId: INITIAL_FAMILY.id,
-    name: 'Glaucia',
+    id: activeUserId,
+    familyId: family.id,
+    name: 'Carregando...',
+    avatar: 'U',
+    color: 'green',
     avatarColor: '#2E7D32',
   };
 

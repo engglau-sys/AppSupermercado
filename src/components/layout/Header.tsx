@@ -20,7 +20,7 @@ export interface HeaderProps {
   members: User[];
   onSelectUser: (userId: string) => void;
   onOpenAddModal: () => void;
-  onResetData: () => void;
+  onResetData?: () => void;
   unviewedCount: number;
 }
 
@@ -98,15 +98,17 @@ export function Header({
 
             {/* Ações da Direita */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Botão de repor dados mock */}
-              <button
-                onClick={onResetData}
-                title="Repor lista inicial de demonstração"
-                className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Repor Demo</span>
-              </button>
+              {/* Botão de repor dados mock (se disponível) */}
+              {onResetData && (
+                <button
+                  onClick={onResetData}
+                  title="Repor lista inicial de demonstração"
+                  className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Repor Demo</span>
+                </button>
+              )}
 
               {/* Botão Adicionar Artigo (Visível em Desktop) */}
               <Button
@@ -118,7 +120,7 @@ export function Header({
                 <span>Adicionar Artigo</span>
               </Button>
 
-              {/* Seletor do Utilizador Ativo (Glaucia) */}
+              {/* Seletor do Utilizador Ativo */}
               <button
                 onClick={() => setIsUserModalOpen(true)}
                 className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-[#2E7D32]/20"
@@ -128,7 +130,7 @@ export function Header({
                   className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-sm"
                   style={{ backgroundColor: currentUser.avatarColor }}
                 >
-                  {currentUser.name.charAt(0).toUpperCase()}
+                  {currentUser.avatar || currentUser.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="text-left hidden sm:block">
                   <div className="text-xs font-bold text-slate-800 leading-tight">

@@ -124,12 +124,12 @@ export function ShoppingItemCard({
                     backgroundColor: creator?.avatarColor || '#2E7D32',
                   }}
                 >
-                  {(creator?.name || 'G').charAt(0).toUpperCase()}
+                  {(creator?.avatar || creator?.name?.charAt(0) || 'M').toUpperCase()}
                 </div>
                 <span>
                   Adicionado por{' '}
                   <strong className="text-slate-600 font-semibold">
-                    {creator?.name || 'Glaucia'}
+                    {creator?.name || 'Membro'}
                   </strong>
                 </span>
                 <span className="text-slate-300">•</span>

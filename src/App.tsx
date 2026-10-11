@@ -40,7 +40,6 @@ export function App() {
     updateItem,
     deleteItem,
     clearPurchased,
-    resetToMockData,
   } = useShoppingList(family.id, currentUser.id);
 
   // Hook de Notificações Familiares (MVP)
@@ -95,7 +94,6 @@ export function App() {
         members={members}
         onSelectUser={switchUser}
         onOpenAddModal={() => setIsAddModalOpen(true)}
-        onResetData={resetToMockData}
         unviewedCount={unviewedCount}
       />
 
@@ -128,7 +126,6 @@ export function App() {
             onDelete={deleteItem}
             onClearPurchased={clearPurchased}
             onOpenAddModal={() => setIsAddModalOpen(true)}
-            onResetData={resetToMockData}
           />
         )}
       </main>

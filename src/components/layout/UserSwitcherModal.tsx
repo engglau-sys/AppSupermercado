@@ -48,16 +48,16 @@ export function UserSwitcherModal({
                   className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm"
                   style={{ backgroundColor: member.avatarColor }}
                 >
-                  {member.name.charAt(0).toUpperCase()}
+                  {member.avatar || member.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
                     <span className="font-semibold text-slate-800 text-sm">
                       {member.name}
                     </span>
-                    {member.name === 'Glaucia' && (
+                    {isActive && (
                       <span className="text-[10px] bg-[#E8F5E9] text-[#2E7D32] px-1.5 py-0.5 rounded font-medium">
-                        Utilizador Principal
+                        Ativo
                       </span>
                     )}
                   </div>

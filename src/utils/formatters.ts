@@ -119,3 +119,27 @@ export const CATEGORY_METADATA: Record<Category, CategoryMeta> = {
     emoji: '📦',
   },
 };
+
+/**
+ * Converte nomes de cores do Supabase (ex: 'blue', 'orange', 'green') em códigos hex elegantes
+ */
+export function resolveUserColor(color?: string): string {
+  if (!color) return '#2E7D32';
+  if (color.startsWith('#') || color.startsWith('rgb')) return color;
+
+  const colorMap: Record<string, string> = {
+    blue: '#1976D2',
+    orange: '#E65100',
+    green: '#2E7D32',
+    red: '#DC2626',
+    purple: '#7C3AED',
+    emerald: '#059669',
+    amber: '#D97706',
+    cyan: '#0891B2',
+    teal: '#0D9488',
+    rose: '#E11D48',
+    slate: '#475569',
+  };
+
+  return colorMap[color.toLowerCase()] || color;
+}

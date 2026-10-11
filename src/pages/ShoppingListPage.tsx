@@ -37,7 +37,7 @@ export interface ShoppingListPageProps {
   onDelete: (id: string) => void;
   onClearPurchased: () => void;
   onOpenAddModal: () => void;
-  onResetData: () => void;
+  onResetData?: () => void;
 }
 
 export function ShoppingListPage({

@@ -33,13 +33,17 @@ export function useNotifications(
 
     // Subscrever a atualizações (compatível com Realtime)
     const unsubscribe = notificationService.subscribeToChanges(
-      userId,
-      (count) => {
-        if (isMounted) {
-          setUnviewedCount(count);
-        }
-      }
-    );
+  userId,
+  (count) => {
+    if (!isMounted) return;
+
+    if (count === -1) {
+      void checkUnviewed();
+    } else {
+      setUnviewedCount(count);
+    }
+  }
+);
 
     return () => {
       isMounted = false;

@@ -7,7 +7,7 @@ import {
   ShoppingListStats,
   FilterStatus,
 } from '../types/shopping';
-import { shoppingService } from '../services';
+import { shoppingService, supabase } from '../services';
 
 export function useShoppingList(familyId: string, currentUserId: string) {
   const [items, setItems] = useState<ShoppingItem[]>([]);
@@ -17,22 +17,50 @@ export function useShoppingList(familyId: string, currentUserId: string) {
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
 
-  // Carregar os itens da família
+  // Carregar os itens da família a partir do Supabase
   const refreshItems = useCallback(async () => {
+    if (!familyId) return;
     try {
       setIsLoading(true);
       const data = await shoppingService.getItems(familyId);
       setItems(data);
     } catch (err) {
-      console.error('Erro ao obter itens de compras:', err);
+      console.error('Erro ao obter itens de compras do Supabase:', err);
     } finally {
       setIsLoading(false);
     }
   }, [familyId]);
 
   useEffect(() => {
-    refreshItems();
-  }, [refreshItems]);
+    if (familyId) {
+      refreshItems();
+    }
+  }, [familyId, refreshItems]);
+
+  // Subscrição em tempo real do Supabase Realtime para sincronização instantânea
+  useEffect(() => {
+    if (!familyId) return;
+
+    const channel = supabase
+      .channel(`realtime:shopping_items:${familyId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'shopping_items',
+          filter: `family_id=eq.${familyId}`,
+        },
+        () => {
+          refreshItems();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [familyId, refreshItems]);
 
   // Adicionar novo item
   const addItem = useCallback(

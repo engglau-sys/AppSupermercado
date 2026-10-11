@@ -35,6 +35,8 @@ export interface User {
   familyId: string;
   name: string;
   avatarColor: string;
+  avatar?: string;
+  color?: string;
 }
 
 /**
@@ -53,6 +55,7 @@ export interface ShoppingItem {
   purchasedBy: string | null; // User ID
   purchasedAt: string | null; // ISO 8601 string
   notes?: string;
+  viewedBy?: string[];
 }
 
 /**
